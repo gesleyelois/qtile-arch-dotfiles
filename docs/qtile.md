@@ -1,4 +1,4 @@
-# Qtile Desktop Customizations
+# Qtile Desktop
 
 ## Bar
 
@@ -86,3 +86,5 @@ Modifier key: `mod4` / Super.
 - `picom`;
 - wallpaper from `$HOME/Pictures/nord-wave.png` when present;
 - `flameshot`.
+
+These tools are installed by `scripts/install.sh`.

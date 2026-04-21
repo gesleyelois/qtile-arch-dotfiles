@@ -8,6 +8,12 @@ packages=(
   qtile
   lm_sensors
   ttf-nerd-fonts-symbols
+  rofi
+  picom
+  feh
+  flameshot
+  brightnessctl
+  libpulse
 )
 
 if command -v pacman >/dev/null 2>&1; then
@@ -50,10 +56,10 @@ echo "Checking Qtile config..."
 if command -v qtile >/dev/null 2>&1; then
   if ! PATH="/usr/bin:/bin" qtile check -c "$qtile_dest/config.py"; then
     echo "qtile check failed; running Python syntax check as a fallback..." >&2
-    python -m py_compile "$qtile_dest/config.py" "$qtile_dest/custom_treetab.py"
+    python -m py_compile "$qtile_dest/config.py" "$qtile_dest/custom_treetab.py" "$qtile_dest/system_status.py"
   fi
 else
-  python -m py_compile "$qtile_dest/config.py" "$qtile_dest/custom_treetab.py"
+  python -m py_compile "$qtile_dest/config.py" "$qtile_dest/custom_treetab.py" "$qtile_dest/system_status.py"
 fi
 
 echo "Installed. Reload Qtile with: mod + control + r"

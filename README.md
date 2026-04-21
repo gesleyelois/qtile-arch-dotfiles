@@ -1,27 +1,47 @@
 # Qtile Arch Dotfiles
 
-Personal Qtile configuration for Arch Linux with persistent desktop
-customizations:
+Opinionated Qtile dotfiles for Arch Linux. The goal is to keep desktop
+customizations in a Git repository instead of editing files that can be lost
+after package or system updates.
 
-- status bar markers for disk, battery, CPU, memory, CPU temperature and
-  weather;
-- weather from the computer location, detected by `wttr.in` through the public
-  IP address;
-- TreeTab with application icons from Nerd Font symbols;
-- Arch input customizations for ABNT2 keymap and natural touchpad scrolling;
-- install script that keeps the active Qtile config as a symlink to this repo.
+## What This Includes
+
+- A Qtile config with a bottom status bar for disk, battery, CPU, memory, CPU
+  temperature, weather, volume, clock and shutdown.
+- A custom TreeTab layout that shows `icon + application name` instead of full
+  window titles.
+- Dynamic workspace display: empty unused groups are hidden from the bar.
+- Keybindings for TreeTab width control, screenshots, brightness, volume,
+  window management and workspace navigation.
+- Optional Arch input files for ABNT2 keyboard layout and natural touchpad
+  scrolling.
+- Install and repair scripts for repeatable setup.
 
 ## Requirements
 
-Arch Linux packages:
+Supported target: Arch Linux with Qtile on X11.
+
+Install dependencies manually:
 
 ```sh
-sudo pacman -S --needed qtile lm_sensors ttf-nerd-fonts-symbols
+sudo pacman -S --needed qtile lm_sensors ttf-nerd-fonts-symbols rofi picom feh flameshot brightnessctl libpulse
 ```
 
-CPU, memory, temperature and weather are read by local helper functions, so the
-config does not depend on Qtile's optional `python-psutil` or `python-aiohttp`
-widgets.
+Or let the installer check and install missing packages after cloning this
+repository:
+
+```sh
+bash scripts/install.sh
+```
+
+Notes:
+
+- The config reads CPU, memory, temperature and weather through local Python
+  helpers, so it does not require Qtile's optional `python-psutil` or
+  `python-aiohttp` widgets.
+- Weather uses `wttr.in` and infers location from public IP. No city is
+  hard-coded.
+- `pactl` is provided by the Arch `libpulse` package.
 
 ## Install
 
@@ -31,77 +51,65 @@ cd ~/Workspaces/qtile-arch-dotfiles
 bash scripts/install.sh
 ```
 
-The installer backs up an existing `~/.config/qtile` directory before creating
-the symlink:
+The installer:
 
-```text
-~/.config/qtile -> ~/Workspaces/qtile-arch-dotfiles/qtile
-```
+- installs missing Arch packages from the requirements list;
+- backs up an existing `~/.config/qtile` directory;
+- creates `~/.config/qtile -> ~/Workspaces/qtile-arch-dotfiles/qtile`;
+- validates the Qtile config.
 
 Reload Qtile after installing:
 
 ```text
-mod + control + r
+Super + Ctrl + r
 ```
+
+## Optional System Input Files
+
+The repository tracks this machine's Arch input profile under `system/`:
+
+- `system/etc/vconsole.conf`: console keymap `br-abnt2` and XKB defaults.
+- `system/etc/X11/xorg.conf.d/00-keyboard.conf`: Xorg `br` layout, `abnt2`
+  model and `terminate:ctrl_alt_bksp`.
+- `system/etc/X11/xorg.conf.d/30-touchpad.conf`: libinput natural scrolling.
+
+These files affect system-wide input behavior. Review them before installing:
+
+```sh
+bash scripts/install-system-input.sh
+```
+
+See [docs/input.md](docs/input.md) for details.
 
 ## Documentation
 
-- [Qtile desktop](docs/qtile.md): widgets, TreeTab, shutdown icon and keybindings.
-- [Arch input](docs/input.md): ABNT2 keymap, XKB options and touchpad natural scrolling.
-- `scripts/fix-python-tools.sh`: repairs stale `~/.local/bin/mypy` and
-  `~/.local/bin/stubtest` wrappers by installing `mypy` in a dedicated venv.
-
-## System Input Customizations
-
-The current Arch Linux keyboard and touchpad customizations are versioned under
-`system/`:
-
-- `system/etc/vconsole.conf`: console keymap `br-abnt2` and XKB `br`/`abnt2`.
-- `system/etc/X11/xorg.conf.d/00-keyboard.conf`: Xorg keyboard layout `br`,
-  model `abnt2` and `terminate:ctrl_alt_bksp`.
-- `system/etc/X11/xorg.conf.d/30-touchpad.conf`: libinput natural scrolling.
-
-To restore these system files on a fresh install:
-
-```sh
-sudo install -Dm644 system/etc/vconsole.conf /etc/vconsole.conf
-sudo install -Dm644 system/etc/X11/xorg.conf.d/00-keyboard.conf /etc/X11/xorg.conf.d/00-keyboard.conf
-sudo install -Dm644 system/etc/X11/xorg.conf.d/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
-```
-
-Apply keyboard settings without editing by hand:
-
-```sh
-sudo localectl set-keymap br-abnt2
-sudo localectl set-x11-keymap br abnt2 "" terminate:ctrl_alt_bksp
-```
-
-## Weather
-
-The bar queries `wttr.in` without a city. This asks `wttr.in` to infer the
-location from the public IP address instead of hard-coding a city.
-
-## TreeTab Icons
-
-`qtile/custom_treetab.py` defines `AppIconTreeTab`, a local TreeTab variant that
-prefixes window titles with application icons. It does not edit Qtile files in
-`/usr/lib`, so Arch package updates will not overwrite the customization.
-
-The TreeTab panel uses a black background and the custom layout is named with an
-icon so the bottom bar does not show the text `appicontreetab`.
+- [Qtile desktop](docs/qtile.md): widgets, TreeTab behavior, keybindings and
+  autostart.
+- [Input profile](docs/input.md): ABNT2 keyboard and touchpad configuration.
+- [Customization guide](docs/customization.md): how to adapt this repo for your
+  own machine.
+- [Troubleshooting](docs/troubleshooting.md): common issues and validation
+  commands.
+- [Contributing](CONTRIBUTING.md): how to propose improvements.
 
 ## Validate
 
 ```sh
-PATH=/usr/bin:/bin qtile check -c ~/.config/qtile/config.py
-python -m py_compile ~/.config/qtile/config.py ~/.config/qtile/custom_treetab.py
+qtile check -c ~/.config/qtile/config.py
+python -m py_compile ~/.config/qtile/config.py ~/.config/qtile/custom_treetab.py ~/.config/qtile/system_status.py
 ```
 
-Using a minimal `PATH` avoids false failures from broken user-local `mypy` or
-`stubtest` commands in `~/.local/bin`.
-
-To repair those commands instead of bypassing them:
+If old user-local Python wrappers break `qtile check`, repair them with:
 
 ```sh
 bash scripts/fix-python-tools.sh
 ```
+
+## Contributing
+
+Issues and pull requests are welcome. Please keep changes portable, documented
+and validated with `qtile check`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

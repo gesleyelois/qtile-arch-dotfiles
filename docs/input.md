@@ -1,6 +1,9 @@
-# Arch Input Customizations
+# Input Profile
 
-This repository tracks the machine's current Arch Linux input configuration.
+This repository tracks an optional Arch Linux input profile. It matches the
+author's current machine and is useful for Brazilian ABNT2 keyboards.
+
+Do not install these files blindly if you use a different keyboard layout.
 
 ## Keyboard
 
@@ -10,7 +13,7 @@ This repository tracks the machine's current Arch Linux input configuration.
 - XKB option: `terminate:ctrl_alt_bksp`, which enables `Ctrl+Alt+Backspace` to
   terminate the X server.
 
-Restore with:
+Apply with:
 
 ```sh
 sudo localectl set-keymap br-abnt2
@@ -21,9 +24,14 @@ sudo localectl set-x11-keymap br abnt2 "" terminate:ctrl_alt_bksp
 
 The tracked Xorg/libinput touchpad file enables natural scrolling.
 
-Restore with:
+Install with:
 
 ```sh
 sudo install -Dm644 system/etc/X11/xorg.conf.d/30-touchpad.conf /etc/X11/xorg.conf.d/30-touchpad.conf
 ```
 
+To install all tracked input files at once:
+
+```sh
+bash scripts/install-system-input.sh
+```
