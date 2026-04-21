@@ -30,6 +30,7 @@ The first layout is `AppIconTreeTab`, a local extension of Qtile's TreeTab.
 - Inactive app foreground: light text on black.
 - Layout name: icon-only, so the bottom bar does not show `appicontreetab`.
 - App labels: Nerd Font icon plus application name, e.g. ` Firefox`.
+- App labels are left-aligned inside the TreeTab panel.
 - Panel width: `150`.
 
 The implementation lives in `qtile/custom_treetab.py` and does not patch Qtile

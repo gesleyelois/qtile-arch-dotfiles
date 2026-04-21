@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from libqtile import pangocffi
 from libqtile.layout.base import Layout
 from libqtile.layout.tree import Root, Section, TreeTab, Window
 
@@ -111,6 +112,7 @@ class AppIconWindow(Window):
 
         left = layout.padding_left + level * layout.level_shift
         layout._layout.font_size = layout.fontsize
+        layout._layout.layout.set_alignment(pangocffi.ALIGNMENTS["left"])
         layout._layout.text = self.add_superscript(
             f"{app_icon_for_window(self.window)} {app_label_for_window(self.window)}"
         )
