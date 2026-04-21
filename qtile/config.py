@@ -60,14 +60,15 @@ for group in groups:
 
 layouts = [
     AppIconTreeTab(
+        name="󰙅",
         sections=["Apps"],
         panel_width=170,
-        bg_color="1e1e2e",
-        active_bg="89b4fa",
-        active_fg="11111b",
-        inactive_bg="313244",
+        bg_color="000000",
+        active_bg="000000",
+        active_fg="89b4fa",
+        inactive_bg="000000",
         inactive_fg="cdd6f4",
-        section_fg="f5c2e7",
+        section_fg="ffffff",
     ),
     layout.Columns(border_focus="#ff0000", border_width=2),
     layout.Max(),
@@ -120,7 +121,7 @@ screens = [
                 widget.Volume(fmt="󰕾 {}", update_interval=0.1),
                 sep(),
                 widget.Clock(format="%Y-%m-%d %a %H:%M"),
-                widget.QuickExit(),
+                widget.QuickExit(default_text="⏻", countdown_format="⏻ {}", countdown_start=3),
             ],
             24,
         ),
@@ -134,7 +135,7 @@ mouse = [
 ]
 
 dgroups_key_binder = None
-dgroups_app_rules = []
+dgroups_app_rules: list = []
 follow_mouse_focus = True
 bring_front_click = False
 floats_kept_above = True
