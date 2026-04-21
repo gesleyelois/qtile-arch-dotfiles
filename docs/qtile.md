@@ -29,7 +29,7 @@ The first layout is `AppIconTreeTab`, a local extension of Qtile's TreeTab.
 - Active app foreground: blue.
 - Inactive app foreground: light text on black.
 - Layout name: icon-only, so the bottom bar does not show `appicontreetab`.
-- App labels: Nerd Font icon plus window title.
+- App labels: Nerd Font icon plus application name, e.g. ` Firefox`.
 - Panel width: `150`.
 
 The implementation lives in `qtile/custom_treetab.py` and does not patch Qtile
@@ -41,6 +41,16 @@ Qtile still defines groups `1` through `5` so the `Super + 1..5` shortcuts keep
 working. The bar uses `widget.GroupBox(hide_unused=True)`, so unused empty
 groups are hidden and the workspace list grows as groups receive windows.
 
+## TreeTab Width
+
+When the TreeTab layout is active:
+
+- `Super + Alt + Left` decreases the `Apps` panel width by 10px.
+- `Super + Alt + Right` increases the `Apps` panel width by 10px.
+
+This changes the running layout immediately. The default width after reload is
+the `panel_width` value in `qtile/config.py`.
+
 ## Keybindings
 
 Modifier key: `mod4` / Super.
@@ -50,6 +60,7 @@ Modifier key: `mod4` / Super.
 | `Super + Left/Right/Down/Up` | Move focus |
 | `Super + Tab` | Focus next window |
 | `Super + Ctrl + h/l/j/k` | Grow focused window |
+| `Super + Alt + Left/Right` | Decrease/increase TreeTab `Apps` panel width |
 | `Super + n` | Normalize layout sizes |
 | `Super + Shift + Enter` | Toggle split |
 | `Super + Enter` | Open terminal |

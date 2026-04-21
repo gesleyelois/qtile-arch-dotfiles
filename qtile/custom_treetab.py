@@ -6,22 +6,35 @@ from libqtile.layout.base import Layout
 from libqtile.layout.tree import Root, Section, TreeTab, Window
 
 
-APP_ICON_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
-    (("alacritty", "kitty", "wezterm", "terminal", "warp"), ""),
-    (("firefox",), ""),
-    (("vivaldi",), ""),
-    (("chromium", "chrome", "brave"), ""),
-    (("code-oss", "code", "visual studio code", "cursor"), ""),
-    (("jetbrains", "intellij", "idea", "pycharm", "webstorm"), ""),
-    (("discord",), ""),
-    (("slack",), ""),
-    (("spotify",), ""),
-    (("obsidian",), "󰠮"),
-    (("postman", "insomnia"), "󰛮"),
-    (("thunar", "nautilus", "dolphin", "file"), ""),
+APP_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
+    (("warp",), "", "Warp"),
+    (("alacritty", "kitty", "wezterm", "terminal"), "", "Terminal"),
+    (("firefox",), "", "Firefox"),
+    (("vivaldi",), "", "Vivaldi"),
+    (("brave",), "", "Brave"),
+    (("chromium",), "", "Chromium"),
+    (("chrome",), "", "Chrome"),
+    (("code-oss",), "", "Code OSS"),
+    (("visual studio code", "code"), "", "VS Code"),
+    (("cursor",), "", "Cursor"),
+    (("intellij", "idea"), "", "IntelliJ"),
+    (("pycharm",), "", "PyCharm"),
+    (("webstorm",), "", "WebStorm"),
+    (("jetbrains",), "", "JetBrains"),
+    (("discord",), "", "Discord"),
+    (("slack",), "", "Slack"),
+    (("spotify",), "", "Spotify"),
+    (("obsidian",), "󰠮", "Obsidian"),
+    (("postman",), "󰛮", "Postman"),
+    (("insomnia",), "󰛮", "Insomnia"),
+    (("thunar",), "", "Thunar"),
+    (("nautilus",), "", "Files"),
+    (("dolphin",), "", "Dolphin"),
+    (("file",), "", "Files"),
 )
 
 DEFAULT_APP_ICON = "󰣆"
+DEFAULT_APP_LABEL = "App"
 
 
 def _as_text_list(value) -> list[str]:
@@ -51,12 +64,45 @@ def _window_terms(window) -> list[str]:
     return [term.lower() for term in terms if term]
 
 
+def _window_classes(window) -> list[str]:
+    terms: list[str] = []
+
+    method = getattr(window, "get_wm_class", None)
+    if callable(method):
+        try:
+            terms.extend(_as_text_list(method()))
+        except Exception:
+            pass
+
+    for attr_name in ("wm_class", "window_class"):
+        terms.extend(_as_text_list(getattr(window, attr_name, None)))
+
+    return [term for term in terms if term]
+
+
+def _fallback_label(window) -> str:
+    terms = _window_classes(window) or _as_text_list(getattr(window, "name", None))
+    if not terms:
+        return DEFAULT_APP_LABEL
+
+    label = terms[0].replace("-", " ").replace("_", " ").strip()
+    return label.title() if label else DEFAULT_APP_LABEL
+
+
 def app_icon_for_window(window) -> str:
     terms = _window_terms(window)
-    for patterns, icon in APP_ICON_RULES:
+    for patterns, icon, _label in APP_RULES:
         if any(pattern in term for pattern in patterns for term in terms):
             return icon
     return DEFAULT_APP_ICON
+
+
+def app_label_for_window(window) -> str:
+    terms = _window_terms(window)
+    for patterns, _icon, label in APP_RULES:
+        if any(pattern in term for pattern in patterns for term in terms):
+            return label
+    return _fallback_label(window)
 
 
 class AppIconWindow(Window):
@@ -64,9 +110,10 @@ class AppIconWindow(Window):
         self._title_top = top
 
         left = layout.padding_left + level * layout.level_shift
-        title = self.window.name or "Untitled"
         layout._layout.font_size = layout.fontsize
-        layout._layout.text = self.add_superscript(f"{app_icon_for_window(self.window)} {title}")
+        layout._layout.text = self.add_superscript(
+            f"{app_icon_for_window(self.window)} {app_label_for_window(self.window)}"
+        )
 
         if self.window is layout._focused:
             fg = layout.active_fg
@@ -120,4 +167,3 @@ class AppIconTreeTab(TreeTab):
         clone._panel = None
         clone._tree = AppIconRoot(self.sections)
         return clone
-
