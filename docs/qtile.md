@@ -5,7 +5,7 @@
 The bottom bar contains:
 
 - current layout icon;
-- workspace groups;
+- workspace groups, showing only used groups plus the current group;
 - prompt and active window title;
 - systray;
 - disk free space for `/`;
@@ -30,9 +30,16 @@ The first layout is `AppIconTreeTab`, a local extension of Qtile's TreeTab.
 - Inactive app foreground: light text on black.
 - Layout name: icon-only, so the bottom bar does not show `appicontreetab`.
 - App labels: Nerd Font icon plus window title.
+- Panel width: `150`.
 
 The implementation lives in `qtile/custom_treetab.py` and does not patch Qtile
 inside `/usr/lib`, so Arch package upgrades should not overwrite it.
+
+## Dynamic Workspace Display
+
+Qtile still defines groups `1` through `5` so the `Super + 1..5` shortcuts keep
+working. The bar uses `widget.GroupBox(hide_unused=True)`, so unused empty
+groups are hidden and the workspace list grows as groups receive windows.
 
 ## Keybindings
 
@@ -67,4 +74,3 @@ Modifier key: `mod4` / Super.
 - `picom`;
 - wallpaper from `$HOME/Pictures/nord-wave.png` when present;
 - `flameshot`.
-

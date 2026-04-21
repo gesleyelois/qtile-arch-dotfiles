@@ -62,7 +62,7 @@ layouts = [
     AppIconTreeTab(
         name="󰙅",
         sections=["Apps"],
-        panel_width=170,
+        panel_width=150,
         bg_color="000000",
         active_bg="000000",
         active_fg="89b4fa",
@@ -86,7 +86,7 @@ screens = [
         bottom=bar.Bar(
             [
                 widget.CurrentLayout(),
-                widget.GroupBox(),
+                widget.GroupBox(hide_unused=True),
                 widget.Prompt(),
                 widget.WindowName(),
                 widget.Chord(
@@ -121,7 +121,13 @@ screens = [
                 widget.Volume(fmt="󰕾 {}", update_interval=0.1),
                 sep(),
                 widget.Clock(format="%Y-%m-%d %a %H:%M"),
-                widget.QuickExit(default_text="⏻", countdown_format="⏻ {}", countdown_start=3),
+                widget.QuickExit(
+                    default_text="⏻",
+                    countdown_format="⏻ {}",
+                    countdown_start=3,
+                    fontsize=16,
+                    padding=6,
+                ),
             ],
             24,
         ),
