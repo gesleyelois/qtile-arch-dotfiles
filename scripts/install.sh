@@ -48,7 +48,7 @@ chmod +x "$qtile_src/autostart.sh"
 
 echo "Checking Qtile config..."
 if command -v qtile >/dev/null 2>&1; then
-  if ! PATH="/usr/bin:/bin:$PATH" qtile check -c "$qtile_dest/config.py"; then
+  if ! PATH="/usr/bin:/bin" qtile check -c "$qtile_dest/config.py"; then
     echo "qtile check failed; running Python syntax check as a fallback..." >&2
     python -m py_compile "$qtile_dest/config.py" "$qtile_dest/custom_treetab.py"
   fi

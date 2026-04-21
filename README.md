@@ -57,9 +57,9 @@ prefixes window titles with application icons. It does not edit Qtile files in
 ## Validate
 
 ```sh
-qtile check -c ~/.config/qtile/config.py
+PATH=/usr/bin:/bin qtile check -c ~/.config/qtile/config.py
 python -m py_compile ~/.config/qtile/config.py ~/.config/qtile/custom_treetab.py
 ```
 
-If `qtile check` reports only broken `mypy` or `stubtest` commands from
-`~/.local/bin`, the Python compile check is still useful for validating syntax.
+Using a minimal `PATH` avoids false failures from broken user-local `mypy` or
+`stubtest` commands in `~/.local/bin`.
