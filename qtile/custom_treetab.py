@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
+import os
 from collections.abc import Iterable
 
 from libqtile import pangocffi
+from libqtile.command.base import expose_command
 from libqtile.layout.base import Layout
 from libqtile.layout.tree import Root, Section, TreeTab, Window
 
@@ -36,6 +39,8 @@ APP_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
 
 DEFAULT_APP_ICON = "󰣆"
 DEFAULT_APP_LABEL = "App"
+STATE_FILE = os.path.expanduser("~/.local/state/qtile-arch-dotfiles/treetab_state.json")
+MIN_PANEL_WIDTH = 50
 
 
 def _as_text_list(value) -> list[str]:
@@ -161,6 +166,7 @@ class AppIconRoot(Root):
 class AppIconTreeTab(TreeTab):
     def __init__(self, **config):
         super().__init__(**config)
+        self.panel_width = self._load_panel_width(self.panel_width)
         self._tree = AppIconRoot(self.sections)
 
     def clone(self, group):
@@ -169,3 +175,33 @@ class AppIconTreeTab(TreeTab):
         clone._panel = None
         clone._tree = AppIconRoot(self.sections)
         return clone
+
+    def _load_panel_width(self, fallback: int) -> int:
+        try:
+            with open(STATE_FILE, encoding="utf-8") as state_file:
+                state = json.load(state_file)
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            return fallback
+
+        panel_width = state.get("panel_width")
+        return panel_width if isinstance(panel_width, int) and panel_width >= MIN_PANEL_WIDTH else fallback
+
+    def _save_panel_width(self) -> None:
+        try:
+            os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+            with open(STATE_FILE, "w", encoding="utf-8") as state_file:
+                json.dump({"panel_width": self.panel_width}, state_file)
+        except OSError:
+            pass
+
+    @expose_command()
+    def increase_ratio(self):
+        super().increase_ratio()
+        self._save_panel_width()
+
+    @expose_command()
+    def decrease_ratio(self):
+        self.panel_width = max(MIN_PANEL_WIDTH, self.panel_width - 10)
+        if self.group is not None:
+            self.group.layout_all()
+        self._save_panel_width()

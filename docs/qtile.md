@@ -49,8 +49,9 @@ When the TreeTab layout is active:
 - `Super + Alt + Left` decreases the `Apps` panel width by 10px.
 - `Super + Alt + Right` increases the `Apps` panel width by 10px.
 
-This changes the running layout immediately. The default width after reload is
-the `panel_width` value in `qtile/config.py`.
+This changes the running layout immediately and persists the last width in
+`~/.local/state/qtile-arch-dotfiles/treetab_state.json`. The `panel_width`
+value in `qtile/config.py` is used as the first-run default.
 
 ## Keybindings
 

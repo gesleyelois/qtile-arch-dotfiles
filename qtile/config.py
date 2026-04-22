@@ -16,6 +16,11 @@ def sep():
     return widget.Sep(linewidth=0, padding=6)
 
 
+volume_up_cmd = "sh -c \"pactl set-sink-volume @DEFAULT_SINK@ +5% && notify-send 'Volume up'\""
+volume_down_cmd = "sh -c \"pactl set-sink-volume @DEFAULT_SINK@ -5% && notify-send 'Volume down'\""
+volume_mute_cmd = "sh -c \"pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send 'Volume mute'\""
+
+
 keys = [
     Key([mod], "Left", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "Right", lazy.layout.right(), desc="Move focus to right"),
@@ -46,9 +51,10 @@ keys = [
     Key([], "Print", lazy.spawn("flameshot gui"), desc="Flameshot GUI"),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-"), desc="Decrease brightness"),
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%"), desc="Increase brightness"),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5% && notify-send 'Volume up'"), desc="Increase volume"),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5% && notify-send 'Volume down'"), desc="Decrease volume"),
-    Key([], "XF86AudioMute", lazy.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send 'Volume mute'"), desc="Mute volume"),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn(volume_up_cmd), desc="Increase volume"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn(volume_down_cmd), desc="Decrease volume"),
+    Key([], "XF86AudioMute", lazy.spawn(volume_mute_cmd), desc="Mute volume"),
+    Key([], "F8", lazy.spawn(volume_mute_cmd), desc="Mute volume fallback for Fn+F8"),
 ]
 
 groups = [Group(i) for i in "12345"]

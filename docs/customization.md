@@ -46,8 +46,10 @@ At runtime, when TreeTab is active:
 - `Super + Alt + Left`: decrease width by 10px.
 - `Super + Alt + Right`: increase width by 10px.
 
-Runtime changes reset after Qtile reload. Change `panel_width` to make a new
-default permanent.
+Runtime changes are persisted in
+`~/.local/state/qtile-arch-dotfiles/treetab_state.json`, so the last width is
+restored after a Qtile reload. Change `panel_width` only if you want to set a
+different first-run default.
 
 ## Change Workspaces
 
@@ -70,4 +72,3 @@ For another layout, update:
 - `system/etc/vconsole.conf`
 - `system/etc/X11/xorg.conf.d/00-keyboard.conf`
 - `docs/input.md`
-
